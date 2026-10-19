@@ -1,0 +1,13 @@
+{
+  "id": "companionLyra",
+  "name": "Lyra",
+  "side": "ally",
+  "recruitable": true,
+  "recruitmentFlag": "lyra_recruited",
+  "maxHp": 40,
+  "attack": 6,
+  "defense": 3,
+  "speed": 7,
+  "portrait": "lyra",
+  "dialogue": "level1_companion"
+}

@@ -775,6 +775,16 @@
           "width": 16,
           "x": 192,
           "y": 112
+        },
+        {
+          "height": 16,
+          "id": 8,
+          "name": "npcLyra",
+          "type": "npc",
+          "visible": true,
+          "width": 16,
+          "x": 320,
+          "y": 64
         }
       ],
       "opacity": 1,
@@ -787,7 +797,30 @@
       "draworder": "topdown",
       "id": 4,
       "name": "encounters",
-      "objects": [],
+      "objects": [
+        {
+          "height": 16,
+          "id": 9,
+          "name": "bossGuardian",
+          "type": "encounter",
+          "visible": true,
+          "width": 16,
+          "x": 384,
+          "y": 128,
+          "properties": [
+            {
+              "name": "combat",
+              "type": "bool",
+              "value": true
+            },
+            {
+              "name": "enemyId",
+              "type": "string",
+              "value": "bossFractureGuardian"
+            }
+          ]
+        }
+      ],
       "opacity": 1,
       "type": "objectgroup",
       "visible": true,
@@ -796,7 +829,7 @@
     }
   ],
   "nextlayerid": 5,
-  "nextobjectid": 8,
+  "nextobjectid": 10,
   "orientation": "orthogonal",
   "renderorder": "right-down",
   "tiledversion": "1.9.2",

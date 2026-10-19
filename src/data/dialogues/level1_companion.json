@@ -1,0 +1,18 @@
+[
+  {
+    "speaker": "Lyra",
+    "text": "Tu n'es pas d'ici... et pourtant la Fracture t'a choisi.",
+    "portrait": "lyra"
+  },
+  {
+    "speaker": "Lyra",
+    "text": "Je garde ce passage depuis l'effondrement. Si tu affrontes le Gardien, j'irai avec toi.",
+    "portrait": "lyra"
+  },
+  {
+    "speaker": "Lyra",
+    "text": "Dis-moi quand tu es prêt.",
+    "portrait": "lyra",
+    "recruit": true
+  }
+]

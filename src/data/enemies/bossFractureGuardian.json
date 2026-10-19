@@ -1,0 +1,14 @@
+{
+  "id": "bossFractureGuardian",
+  "name": "Gardien de la Fracture",
+  "side": "enemy",
+  "boss": true,
+  "maxHp": 80,
+  "attack": 8,
+  "defense": 4,
+  "speed": 4,
+  "attacks": [
+    { "name": "Frappe de la Fracture", "damage": 10 },
+    { "name": "Onde de Choc", "damage": 6, "area": true }
+  ]
+}

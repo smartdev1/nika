@@ -1,0 +1,13 @@
+[
+  {
+    "speaker": "Gardien de la Fracture",
+    "text": "Nul ne passe sans l'épreuve de la pierre.",
+    "portrait": "bossFractureGuardian"
+  },
+  {
+    "speaker": "Gardien de la Fracture",
+    "text": "Que ta force soit à la hauteur de ton courage.",
+    "portrait": "bossFractureGuardian",
+    "startEncounter": "bossFractureGuardian"
+  }
+]

@@ -15,8 +15,11 @@ import { EncounterSystem } from '../../systems/combat/EncounterSystem';
 // Données de jeu importées via Vite (évite les 404 après build : plus de chemins
 // src/data/* chargés par URL dans preload()). Voir T-024.
 import clairiereMap from '../../data/worlds/clairiere.json';
+import level1Map from '../../data/worlds/level1.json';
 import kaelDialogue from '../../data/dialogues/kael.json';
+import level1KaelDialogue from '../../data/dialogues/level1_kael.json';
 import puzzle1Config from '../../data/puzzles/puzzle1.json';
+import level1PuzzleConfig from '../../data/puzzles/level1_puzzle.json';
 import testEnemyData from '../../data/enemies/testEnemy.json';
 
 export default class ExplorationScene extends Phaser.Scene {
@@ -95,7 +98,9 @@ export default class ExplorationScene extends Phaser.Scene {
     // this.cache.tilemap.add + this.make.tilemap({ key }) ne parse pas le
     // JSON brut Tiled en TilemapData, ce qui rend les layers introuvables.
     this.cache.json.add('kaelDialogue', kaelDialogue);
+    this.cache.json.add('level1KaelDialogue', level1KaelDialogue);
     this.cache.json.add('puzzle1', puzzle1Config);
+    this.cache.json.add('level1Puzzle', level1PuzzleConfig);
     this.cache.json.add('enemyTestEnemy', testEnemyData);
 
     // Le tilemap est ajouté au cache avec le format TILED_JSON (1) pour que
@@ -105,9 +110,13 @@ export default class ExplorationScene extends Phaser.Scene {
         format: Phaser.Tilemaps.Formats.TILED_JSON,
         data: clairiereMap,
     });
+    this.cache.tilemap.add('level1', {
+        format: Phaser.Tilemaps.Formats.TILED_JSON,
+        data: level1Map,
+    });
 
-    // Load the tilemap from the cache.
-    this.map = this.make.tilemap({ key: 'clairiere' });
+    // Load the tilemap from the cache. Use level1 for the first playable level.
+    this.map = this.make.tilemap({ key: 'level1' });
 
     // Get layers
     this.groundLayer = this.map.getLayer('ground');
@@ -183,8 +192,13 @@ export default class ExplorationScene extends Phaser.Scene {
       }
     }
 
+    // Spawn position from the 'spawn' object in the interactives layer (level1).
+    const spawnObj = this.interactionLayer?.objects?.find((o: any) => o.name === 'spawn');
+    const spawnX = spawnObj ? spawnObj.x + (spawnObj.width || 0) / 2 : 100;
+    const spawnY = spawnObj ? spawnObj.y + (spawnObj.height || 0) / 2 : 100;
+
     // Create player as animated sprite (required by InteractionSystem)
-    this.player = this.physics.add.sprite(100, 100, 'heroine-walk', 0);
+    this.player = this.physics.add.sprite(spawnX, spawnY, 'heroine-walk', 0);
     this.player.setDepth(10);
     this.player.body.setCollideWorldBounds(true);
     // Animation idle par défaut (regard vers le bas)
@@ -240,7 +254,7 @@ export default class ExplorationScene extends Phaser.Scene {
     this.createPuzzleObjects();
 
     // Instantiate the puzzle system and connect it to the interaction system
-    const puzzleConfig = this.cache.json.get('puzzle1') as {
+    const puzzleConfig = this.cache.json.get('level1Puzzle') as {
       id: string;
       expectedSequence: string[];
       successEvent: string;
@@ -367,7 +381,7 @@ export default class ExplorationScene extends Phaser.Scene {
     const interactives = this.interactionLayer.objects;
 
     for (const obj of interactives) {
-      if (obj.name === 'blockerRock') {
+      if (obj.name === 'blockerRock' || obj.name === 'blocker_rock') {
         // Rocher bloquant : rectangle gris, plus grand
         const blocker = this.add.rectangle(obj.x + obj.width / 2, obj.y + obj.height / 2, 32, 16, 0x5d4037);
         this.physics.add.existing(blocker);
@@ -596,6 +610,13 @@ export default class ExplorationScene extends Phaser.Scene {
             this.dialogueSystem.startLineDialogue(lines);
           }
         });
+      } else if (name === 'npcKael') {
+        const lines = this.cache.json.get('level1KaelDialogue') as
+          | { speaker: string; text: string; portrait?: string }[]
+          | undefined;
+        if (lines) {
+          this.dialogueSystem.startLineDialogue(lines);
+        }
       }
       // Mark the interacted object as activated and persist
       if (!this.activatedObjectIds.includes(id)) {
