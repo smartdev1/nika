@@ -1,0 +1,9 @@
+{
+  "id": "testEnemy",
+  "name": "Enfant de la Fracture",
+  "side": "enemy",
+  "maxHp": 30,
+  "attack": 5,
+  "defense": 2,
+  "speed": 5
+}
