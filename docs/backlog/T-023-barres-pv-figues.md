@@ -1,7 +1,7 @@
 ---
 id: T-023
 title: Barres de PV figées dans le combat
-status: qa
+status: done
 owner: game-dev
 author_of_code: game-dev
 priority: P1

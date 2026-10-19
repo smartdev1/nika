@@ -1,7 +1,7 @@
 ---
 id: T-025
 title: Double déclenchement du combat
-status: qa
+status: done
 owner: game-dev
 author_of_code: game-dev
 priority: P1

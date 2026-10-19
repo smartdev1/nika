@@ -58,7 +58,7 @@ export default class ExplorationScene extends Phaser.Scene {
   private needsSave = false;
   private lastSaveTime = 0;
   private readonly SAVE_INTERVAL_MS = 5000; // throttle: au plus une sauvegarde toutes les 5s
-  private lastSavedPosition!: Phaser.Math.Vector2;
+  private lastSavedPosition: Phaser.Math.Vector2 = new Phaser.Math.Vector2(0, 0);
   private readonly POSITION_SAVE_THRESHOLD = 100; // pixels
 
   constructor() {

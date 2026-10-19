@@ -1,7 +1,7 @@
 ---
 id: T-028
 title: OrientationOverlay contradictoire (teste gameSize, hide() appelle scene.resume())
-status: review
+status: done
 owner: game-dev
 author_of_code: game-dev
 priority: P1
@@ -27,3 +27,44 @@ As a player, the orientation overlay appears correctly in portrait mode and does
 ## Technical notes
 - Roadmap §1.1 T-028
 - L'overlay doit tracker quelle scène il a mise en pause pour ne la reprendre que si nécessaire
+
+## Review
+Verdict : APPROUVÉ
+
+### Bloquant
+- (aucun)
+
+### Important
+- (aucun)
+
+### Mineur / suggestion
+- createUI utilise gameSize pour les dimensions initiales ; compensé par computeIsPortrait() sur window. Acceptable.
+
+### Points positifs
+- pausedByOverlay flag correctement géré dans show()/hide().
+- Listener matchMedia retiré au destroy().
+
+Prochaine action : passage en QA.
+
+## QA report
+Verdict : ACCEPTÉ
+
+### Critères d'acceptation
+- [x] détection via window.innerWidth/innerHeight
+- [x] hide() ne reprend que la scène mise en pause (pausedByOverlay)
+- [x] listener matchMedia retiré au destroy
+- [x] tests non régressés
+
+### Tests exécutés
+- Automatisés : 37 passés / 0 échoués
+
+### Bugs
+- (aucun)
+
+### Zones non couvertes / risques résiduels
+- createUI utilise gameSize pour dimensions initiales ; compensé par computeIsPortrait.
+
+### Non-régression
+- Zones vérifiées : OrientationOverlay.
+
+Prochaine action : clôture T-028.

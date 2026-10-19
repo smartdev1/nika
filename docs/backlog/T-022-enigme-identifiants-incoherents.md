@@ -1,7 +1,7 @@
 ---
 id: T-022
 title: Énigme impossible — identifiants incohérents
-status: qa
+status: done
 owner: game-dev
 author_of_code: game-dev
 priority: P1

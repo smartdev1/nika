@@ -1,7 +1,7 @@
 ---
 id: T-024
 title: JSON de jeu chargés par URL (404 après build)
-status: qa
+status: done
 owner: game-dev
 author_of_code: game-dev
 priority: P1
