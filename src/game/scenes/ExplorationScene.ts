@@ -168,9 +168,12 @@ export default class ExplorationScene extends Phaser.Scene {
     // GameObject per tile (T-030). The layer already exists in clairiere.json.
     const tileset = this.map.addTilesetImage('tileset', 'ground-tiles');
     if (tileset) {
-      this.obstacleLayer = this.map.createLayer('obstacles', tileset, 0, 0) ?? this.obstacleLayer;
+      const created = this.map.createLayer('obstacles', tileset, 0, 0);
+      if (created) {
+        this.obstacleLayer = created;
+      }
     }
-    this.obstacleLayer.setCollisionByExclusion([-1]);
+    this.obstacleLayer!.setCollisionByExclusion([-1]);
 
     // Create player as animated sprite (required by InteractionSystem)
     this.player = this.physics.add.sprite(100, 100, 'heroine-walk', 0);
