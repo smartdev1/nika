@@ -1,0 +1,94 @@
+{
+  "heroine_walk.png": {
+    "path": "spritesheets/heroine_walk.png",
+    "width": 128,
+    "height": 128,
+    "frameWidth": 32,
+    "frameHeight": 32,
+    "framesPerDirection": 4,
+    "directions": [
+      "down",
+      "left",
+      "right",
+      "up"
+    ]
+  },
+  "heroine_idle.png": {
+    "path": "spritesheets/heroine_idle.png",
+    "width": 128,
+    "height": 128,
+    "frameWidth": 32,
+    "frameHeight": 32,
+    "framesPerDirection": 4,
+    "directions": [
+      "down",
+      "left",
+      "right",
+      "up"
+    ]
+  },
+  "heroine_attack.png": {
+    "path": "spritesheets/heroine_attack.png",
+    "width": 128,
+    "height": 128,
+    "frameWidth": 32,
+    "frameHeight": 32,
+    "framesPerDirection": 4,
+    "directions": [
+      "down",
+      "left",
+      "right",
+      "up"
+    ]
+  },
+  "heroine_hit.png": {
+    "path": "spritesheets/heroine_hit.png",
+    "width": 96,
+    "height": 128,
+    "frameWidth": 32,
+    "frameHeight": 32,
+    "framesPerDirection": 3,
+    "directions": [
+      "down",
+      "left",
+      "right",
+      "up"
+    ]
+  },
+  "heroine_dead.png": {
+    "path": "spritesheets/heroine_dead.png",
+    "width": 96,
+    "height": 128,
+    "frameWidth": 32,
+    "frameHeight": 32,
+    "framesPerDirection": 3,
+    "directions": [
+      "down",
+      "left",
+      "right",
+      "up"
+    ]
+  },
+  "heroine_special.png": {
+    "path": "spritesheets/heroine_special.png",
+    "width": 128,
+    "height": 128,
+    "frameWidth": 32,
+    "frameHeight": 32,
+    "framesPerDirection": 4,
+    "directions": [
+      "down",
+      "left",
+      "right",
+      "up"
+    ]
+  },
+  "heroine_walk_all_directions.png": {
+    "path": "spritesheets/heroine_walk_all_directions.png",
+    "width": 128,
+    "height": 128,
+    "frameWidth": 32,
+    "frameHeight": 32,
+    "layout": "rows down,left,right,up; columns frames"
+  }
+}

@@ -1,0 +1,99 @@
+{
+  "title": "Les Échos de la Fracture — Environment Pack",
+  "tileSize": [
+    32,
+    32
+  ],
+  "format": "PNG RGBA for sprites/tiles; RGB background",
+  "assets": {
+    "ground/ground_tileset_32.png": {
+      "size": [
+        192,
+        128
+      ],
+      "grid": [
+        6,
+        4
+      ],
+      "tileCount": 24,
+      "tiles": [
+        "grass",
+        "grass_alt",
+        "grass_flower",
+        "dirt",
+        "path",
+        "stone",
+        "stone_alt",
+        "moss",
+        "water",
+        "water_alt",
+        "water_edge",
+        "sand",
+        "grass_dirt",
+        "grass_stone",
+        "path_stone",
+        "stone_moss",
+        "cave_floor",
+        "cave_purple",
+        "rune_floor",
+        "cracked_stone",
+        "grass_corner",
+        "dirt_corner",
+        "path_corner",
+        "void"
+      ]
+    },
+    "obstacles/obstacles_tileset_32.png": {
+      "size": [
+        256,
+        128
+      ],
+      "grid": [
+        8,
+        4
+      ],
+      "tileCount": 32
+    },
+    "interactive/interactive_objects_32.png": {
+      "size": [
+        192,
+        128
+      ],
+      "grid": [
+        6,
+        4
+      ],
+      "tileCount": 24
+    },
+    "enemies/enemies_tileset_32.png": {
+      "size": [
+        192,
+        96
+      ],
+      "grid": [
+        6,
+        3
+      ],
+      "tileCount": 18
+    },
+    "ui/ui_tileset_32.png": {
+      "size": [
+        256,
+        128
+      ],
+      "grid": [
+        8,
+        4
+      ],
+      "tileCount": 32
+    },
+    "backgrounds/night_fracture_960x540.png": {
+      "size": [
+        960,
+        540
+      ],
+      "opaque": true
+    }
+  },
+  "notes": "Assets originaux de prototype, style pixel-art sombre. Vérifier les raccords des tuiles et ajuster les collisions avant production."
+}

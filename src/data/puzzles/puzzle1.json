@@ -1,0 +1,7 @@
+{
+  "id": "puzzle1",
+  "title": "Les pierres runiques",
+  "expectedSequence": ["stone_rune_a", "stone_rune_b", "stone_rune_c"],
+  "successEvent": "puzzle1_solved",
+  "blockerId": "blocker_rock"
+}
