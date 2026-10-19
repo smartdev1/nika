@@ -59,6 +59,8 @@ export class DialogueSystem {
     // Create container for dialogue box
     this.dialogueContainer = this.scene.add.container(0, 0);
     this.dialogueContainer.setVisible(false);
+    this.dialogueContainer.setDepth(2000);
+    this.dialogueContainer.setScrollFactor(0);
 
     // Background box using Graphics for rounded rectangle
     const padding = 20;
@@ -147,13 +149,13 @@ export class DialogueSystem {
       // We need to recreate the graphics for hover effect
       buttonBg.clear();
       buttonBg.fillStyle(0x000000, 0.8);
-      buttonBg.fillRoundedRect(0, 0, buttonWidth, buttonHeight, 10);
+      buttonBg.fillRoundedRect(-buttonWidth/2, -buttonHeight/2, buttonWidth, buttonHeight, 10);
     });
     this.continueButton.on('pointerout', () => {
       // Reset to normal state
       buttonBg.clear();
       buttonBg.fillStyle(0x000000, 0.7);
-      buttonBg.fillRoundedRect(0, 0, buttonWidth, buttonHeight, 10);
+      buttonBg.fillRoundedRect(-buttonWidth/2, -buttonHeight/2, buttonWidth, buttonHeight, 10);
     });
 
     this.dialogueContainer.add(this.continueButton);

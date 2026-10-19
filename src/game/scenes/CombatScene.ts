@@ -48,6 +48,8 @@ export default class CombatScene extends Phaser.Scene {
   }
 
   create(): void {
+    this.events.once('shutdown', () => this.shutdown());
+
     const { width, height } = this.scale;
 
     // Dimmed background: reuse a dark tint so the world underneath is still vaguely visible.

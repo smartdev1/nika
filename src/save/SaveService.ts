@@ -47,10 +47,24 @@ async function withStore<T>(
     const store = tx.objectStore(STORE_NAME);
     const req = fn(store);
 
-    req.onsuccess = () => resolve(req.result);
-    req.onerror = () => reject(req.error);
-    tx.oncomplete = () => db.close();
-    tx.onerror = () => reject(tx.error);
+    let result: T | undefined;
+    req.onsuccess = () => {
+      result = req.result;
+    };
+    req.onerror = () => reject(req.error ?? new Error('IndexedDB request failed'));
+
+    tx.oncomplete = () => {
+      db.close();
+      resolve(result as T);
+    };
+    tx.onerror = () => {
+      db.close();
+      reject(tx.error ?? new Error('IndexedDB transaction failed'));
+    };
+    tx.onabort = () => {
+      db.close();
+      reject(tx.error ?? new Error('IndexedDB transaction aborted'));
+    };
   });
 }
 
@@ -81,17 +95,12 @@ export class SaveService {
    * @param data - Objet de sauvegarde à persister (doit sérialiser en JSON)
    */
   async saveGame(data: GameSave): Promise<void> {
-    try {
-      const payload = {
-        ...data,
-        updatedAt: Date.now(),
-      };
-      await withStore('readwrite', (store) => store.put(payload, SAVE_KEY));
-      console.log('[SaveService] Partie sauvegardée avec succès.');
-    } catch (error) {
-      // Les erreurs IndexedDB sont logguées mais ne bloquent pas le jeu.
-      console.error('[SaveService] Échec de la sauvegarde:', error);
-    }
+    const payload = {
+      ...data,
+      updatedAt: Date.now(),
+    };
+    await withStore('readwrite', (store) => store.put(payload, SAVE_KEY));
+    console.log('[SaveService] Partie sauvegardée avec succès.');
   }
 
   /**
@@ -109,7 +118,15 @@ export class SaveService {
       if (result === undefined) {
         return null;
       }
-      return result as GameSave;
+      // Validation simple du schéma + valeurs par défaut (T-031)
+      const save: GameSave = {
+        heroinePos: result.heroinePos ?? { x: 0, y: 0 },
+        activatedStones: Array.isArray(result.activatedStones) ? result.activatedStones : [],
+        defeatedEncounters: Array.isArray(result.defeatedEncounters) ? result.defeatedEncounters : [],
+        dialogueProgress: typeof result.dialogueProgress === 'number' ? result.dialogueProgress : 0,
+        updatedAt: typeof result.updatedAt === 'number' ? result.updatedAt : Date.now(),
+      };
+      return save;
     } catch (error) {
       console.error('[SaveService] Échec du chargement:', error);
       return null;

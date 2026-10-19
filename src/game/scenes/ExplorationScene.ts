@@ -27,7 +27,6 @@ export default class ExplorationScene extends Phaser.Scene {
   private interactionLayer!: Phaser.Tilemaps.ObjectLayer;
   private encounterLayer!: Phaser.Tilemaps.ObjectLayer;
   private player!: Phaser.Physics.Arcade.Sprite;
-  private obstacleSprites!: Phaser.GameObjects.Group;
   private depthGroup!: Phaser.GameObjects.Group;
   private interactionSystem!: InteractionSystem;
   private actionButtonA!: TouchButton;
@@ -165,21 +164,13 @@ export default class ExplorationScene extends Phaser.Scene {
       });
     }
 
-    // Create obstacle sprites with static physics (immovable)
-    this.obstacleSprites = this.physics.add.staticGroup();
-    const obstacleData = this.obstacleLayer.layer?.data;
-    if (obstacleData) {
-      for (let y = 0; y < obstacleData.length; y++) {
-        const row = obstacleData[y];
-        if (!row) continue;
-        for (let x = 0; x < row.length; x++) {
-          if (row[x] > 0) {
-            const obstacle = this.add.rectangle(x * 16 + 8, y * 16 + 8, 16, 16, 0x8d6e63);
-            this.obstacleSprites.add(obstacle, true);
-          }
-        }
-      }
+    // Obstacles: use the real TilemapLayer with collision instead of one
+    // GameObject per tile (T-030). The layer already exists in clairiere.json.
+    const tileset = this.map.addTilesetImage('tileset', 'ground-tiles');
+    if (tileset) {
+      this.obstacleLayer = this.map.createLayer('obstacles', tileset, 0, 0) ?? this.obstacleLayer;
     }
+    this.obstacleLayer.setCollisionByExclusion([-1]);
 
     // Create player as animated sprite (required by InteractionSystem)
     this.player = this.physics.add.sprite(100, 100, 'heroine-walk', 0);
@@ -191,11 +182,10 @@ export default class ExplorationScene extends Phaser.Scene {
 
     // Create depth group
     this.depthGroup = this.add.group();
-    this.depthGroup.addMultiple(this.obstacleSprites.getChildren());
     this.depthGroup.add(this.player);
 
-    // Collision
-    this.physics.add.collider(this.player, this.obstacleSprites);
+    // Collision between player and obstacle tilemap layer (T-030)
+    this.physics.add.collider(this.player, this.obstacleLayer);
 
     // Controls
     // Keyboard inputs were removed in T-008: movement is now driven by the
@@ -495,7 +485,9 @@ export default class ExplorationScene extends Phaser.Scene {
     }
 
     // Handle player movement
-    const speed = 100;
+    // Bloquer le mouvement pendant un dialogue actif (T-027)
+    const dialogueActive = this.dialogueSystem?.isDialogueActive?.() ?? false;
+    const speed = dialogueActive ? 0 : 100;
 
     // Reset velocity
     this.player.body.setVelocity(0);
@@ -627,6 +619,17 @@ export default class ExplorationScene extends Phaser.Scene {
       } catch (error) {
         console.error('[SaveService] Échec de la persistance de la victoire:', error);
       }
+    } else if (result === 'defeat' && enemyId) {
+      // T-026: réinitialiser l'encounter pour permettre un nouveau combat
+      this.encounterSystem.resetEncounterByEnemyId(enemyId);
+      // Recul du joueur pour éviter un re-déclenchement immédiat
+      const pushback = 64; // pixels
+      if (this.player) {
+        // Pousser dans la direction opposée au dernier déplacement (vers le bas par défaut)
+        this.player.x -= pushback;
+        this.player.y -= pushback;
+      }
+      console.log(`[ExplorationScene] Défaite contre ${enemyId} — encounter réinitialisé, recul du joueur.`);
     }
   }
 

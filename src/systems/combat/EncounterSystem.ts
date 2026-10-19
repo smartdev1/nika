@@ -124,4 +124,13 @@ export class EncounterSystem {
       }
     }
   }
+
+  /** Resets all encounters with the given enemyId so they can be triggered again. */
+  resetEncounterByEnemyId(enemyId: string): void {
+    for (const e of this.encounters) {
+      if (e.enemyId === enemyId) {
+        e.alreadyTriggered = false;
+      }
+    }
+  }
 }

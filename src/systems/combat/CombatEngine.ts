@@ -28,6 +28,10 @@ class Emitter {
       cb(...args);
     }
   }
+
+  removeAllListeners(): void {
+    this.listeners = {};
+  }
 }
 
 export interface CombatStartOptions {
@@ -62,6 +66,11 @@ export class CombatEngine {
   /** Unsubscribe from a combat event. */
   off(event: string, callback: (...args: any[]) => void): void {
     this.emitter.off(event, callback);
+  }
+
+  /** Remove all listeners from all combat events. */
+  removeAllListeners(): void {
+    this.emitter.removeAllListeners();
   }
 
   /** Whether a combat session is currently active. */

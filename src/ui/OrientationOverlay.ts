@@ -10,6 +10,8 @@ export class OrientationOverlay {
   private text!: Phaser.GameObjects.Text;
   private isVisible: boolean = false;
   private mediaQuery: MediaQueryList | null = null;
+  private mediaQueryHandler: ((e: MediaQueryListEvent) => void) | null = null;
+  private pausedByOverlay: boolean = false;
 
   constructor(scene: Phaser.Scene) {
     this.scene = scene;
@@ -54,7 +56,8 @@ export class OrientationOverlay {
     // Window orientation change via matchMedia (more reliable on mobile)
     if (typeof window !== 'undefined' && window.matchMedia) {
       this.mediaQuery = window.matchMedia('(orientation: portrait)');
-      this.mediaQuery.addEventListener('change', (e) => this.handleOrientationChange(e.matches));
+      this.mediaQueryHandler = (e: MediaQueryListEvent) => this.handleOrientationChange(e.matches);
+      this.mediaQuery.addEventListener('change', this.mediaQueryHandler);
     }
   }
 
@@ -69,8 +72,17 @@ export class OrientationOverlay {
     // Recenter the message
     this.text.setPosition(width / 2, height / 2);
 
-    // Re-evaluate orientation based on canvas aspect ratio
-    this.handleOrientationChange(height > width);
+    // Re-evaluate orientation based on window aspect ratio (not gameSize)
+    const isPortrait = this.computeIsPortrait();
+    this.handleOrientationChange(isPortrait);
+  }
+
+  private computeIsPortrait(): boolean {
+    if (typeof window !== 'undefined' && window.innerWidth && window.innerHeight) {
+      return window.innerWidth < window.innerHeight;
+    }
+    const { width, height } = this.scene.scale.gameSize;
+    return height > width;
   }
 
   private handleOrientationChange(isPortrait: boolean): void {
@@ -82,14 +94,8 @@ export class OrientationOverlay {
   }
 
   private checkOrientation(): void {
-    // matchMedia path
-    if (this.mediaQuery) {
-      this.handleOrientationChange(this.mediaQuery.matches);
-      return;
-    }
-    // Fallback: canvas aspect ratio
-    const { width, height } = this.scene.scale.gameSize;
-    this.handleOrientationChange(height > width);
+    // Prefer window dimensions (gameSize is always 960x540 in FIT mode)
+    this.handleOrientationChange(this.computeIsPortrait());
   }
 
   /**
@@ -109,12 +115,17 @@ export class OrientationOverlay {
     this.container.setVisible(true);
     // Pause the game scene: no movement, no interaction updates while overlay is shown
     this.scene.scene.pause();
+    this.pausedByOverlay = true;
   }
 
   private hide(): void {
     this.isVisible = false;
     this.container.setVisible(false);
-    this.scene.scene.resume();
+    // Only resume if the overlay itself paused the scene (avoid resuming a combat scene)
+    if (this.pausedByOverlay) {
+      this.scene.scene.resume();
+      this.pausedByOverlay = false;
+    }
   }
 
   /** Check if the overlay is currently shown. */
@@ -124,9 +135,10 @@ export class OrientationOverlay {
 
   destroy(): void {
     this.scene.scale.off('resize', this.handleResize, this);
-    if (this.mediaQuery) {
-      this.mediaQuery.removeEventListener('change', () => this.handleOrientationChange(false));
+    if (this.mediaQuery && this.mediaQueryHandler) {
+      this.mediaQuery.removeEventListener('change', this.mediaQueryHandler);
       this.mediaQuery = null;
+      this.mediaQueryHandler = null;
     }
     this.container.destroy();
   }

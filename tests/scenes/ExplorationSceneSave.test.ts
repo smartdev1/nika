@@ -13,6 +13,7 @@ describe('ExplorationScene — persistance des ennemis vaincus (T-020 / T-021)',
   const mockLoadGame = vi.fn();
   const mockEncounterSystem = {
     markEncounterDefeated: vi.fn(),
+    resetEncounterByEnemyId: vi.fn(),
   };
 
   beforeEach(() => {
