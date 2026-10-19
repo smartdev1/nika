@@ -24,6 +24,7 @@ export default class ExplorationScene extends Phaser.Scene {
   private tileset!: Phaser.Tilemaps.Tileset;
   private groundLayer!: Phaser.Tilemaps.TilemapLayer;
   private obstacleLayer!: Phaser.Tilemaps.TilemapLayer;
+  private obstacleSprites!: Phaser.GameObjects.Group;
   private interactionLayer!: Phaser.Tilemaps.ObjectLayer;
   private encounterLayer!: Phaser.Tilemaps.ObjectLayer;
   private player!: Phaser.Physics.Arcade.Sprite;
@@ -164,16 +165,23 @@ export default class ExplorationScene extends Phaser.Scene {
       });
     }
 
-    // Obstacles: use the real TilemapLayer with collision instead of one
-    // GameObject per tile (T-030). The layer already exists in clairiere.json.
-    const tileset = this.map.addTilesetImage('tileset', 'ground-tiles');
-    if (tileset) {
-      const created = this.map.createLayer('obstacles', tileset, 0, 0);
-      if (created) {
-        this.obstacleLayer = created;
+    // Obstacles: one static GameObject per non-empty tile (original, stable).
+    // T-030 (real TilemapLayer) is deferred: createLayer/setCollisionByExclusion
+    // crashed at runtime ("Cannot read properties of undefined (reading '0')").
+    this.obstacleSprites = this.physics.add.staticGroup();
+    const obstacleData = this.obstacleLayer?.layer?.data;
+    if (obstacleData) {
+      for (let y = 0; y < obstacleData.length; y++) {
+        const row = obstacleData[y];
+        if (!row) continue;
+        for (let x = 0; x < row.length; x++) {
+          if (row[x] && row[x].index !== -1) {
+            const obstacle = this.add.rectangle(x * 16 + 8, y * 16 + 8, 16, 16, 0x8d6e63);
+            this.obstacleSprites.add(obstacle, true);
+          }
+        }
       }
     }
-    this.obstacleLayer!.setCollisionByExclusion([-1]);
 
     // Create player as animated sprite (required by InteractionSystem)
     this.player = this.physics.add.sprite(100, 100, 'heroine-walk', 0);
@@ -185,10 +193,11 @@ export default class ExplorationScene extends Phaser.Scene {
 
     // Create depth group
     this.depthGroup = this.add.group();
+    this.depthGroup.addMultiple(this.obstacleSprites.getChildren());
     this.depthGroup.add(this.player);
 
-    // Collision between player and obstacle tilemap layer (T-030)
-    this.physics.add.collider(this.player, this.obstacleLayer);
+    // Collision
+    this.physics.add.collider(this.player, this.obstacleSprites);
 
     // Controls
     // Keyboard inputs were removed in T-008: movement is now driven by the

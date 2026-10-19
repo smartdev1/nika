@@ -1,0 +1,7 @@
+{
+  "id": "level1_puzzle",
+  "title": "Les pierres runiques de la Fracture",
+  "expectedSequence": ["stoneRuneA", "stoneRuneB", "stoneRuneC"],
+  "successEvent": "level1_puzzle_solved",
+  "blockerId": "blocker_rock"
+}
