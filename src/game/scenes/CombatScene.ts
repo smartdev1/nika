@@ -150,8 +150,15 @@ export default class CombatScene extends Phaser.Scene {
   }
 
   private updateParticipantViews(): void {
+    // Lire les données à jour depuis le moteur : CombatEngine stocke des copies
+    // des participants et les modifie (PV, isAlive). Les références stockées dans
+    // participantViews pointent vers les objets originaux (figés) passés en init().
+    const engineParticipants = this.combatEngine.getParticipants();
     for (const [id, view] of this.participantViews) {
-      const c = view.combatant;
+      const c = engineParticipants.find((p) => p.id === id);
+      if (!c) {
+        continue;
+      }
       const hpRatio = c.hp / c.maxHp;
       view.hpBarFill.clear();
       view.hpBarFill.fillStyle(0x4caf50, 1);

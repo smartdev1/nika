@@ -12,6 +12,13 @@ import type { Combatant } from '../../types/index';
 import { PuzzleSystem } from '../../systems/puzzle/PuzzleSystem';
 import { EncounterSystem } from '../../systems/combat/EncounterSystem';
 
+// Données de jeu importées via Vite (évite les 404 après build : plus de chemins
+// src/data/* chargés par URL dans preload()). Voir T-024.
+import clairiereMap from '../../data/worlds/clairiere.json';
+import kaelDialogue from '../../data/dialogues/kael.json';
+import puzzle1Config from '../../data/puzzles/puzzle1.json';
+import testEnemyData from '../../data/enemies/testEnemy.json';
+
 export default class ExplorationScene extends Phaser.Scene {
   private map!: Phaser.Tilemaps.Tilemap;
   private tileset!: Phaser.Tilemaps.Tileset;
@@ -60,16 +67,8 @@ export default class ExplorationScene extends Phaser.Scene {
   }
 
   preload() {
-    // Load the tilemap JSON
-    this.load.tilemapTiledJSON('clairiere', 'src/data/worlds/clairiere.json');
     // Load a white pixel texture for sprites (placeholder fallback)
     this.load.image('white', 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR4nGP6zwAAAgcBApocMXEAAAAASUVORK5CYII=');
-    // Load Kaël dialogue data (linear dialogue with speaker + text)
-    this.load.json('kaelDialogue', 'src/data/dialogues/kael.json');
-    // Load puzzle configuration (expected sequence of runic stones)
-    this.load.json('puzzle1', 'src/data/puzzles/puzzle1.json');
-    // Load enemy data for encounters
-    this.load.json('enemyTestEnemy', 'src/data/enemies/testEnemy.json');
 
     // --- Héroïne (pack testpack, cellules 32×32) ---
     this.load.spritesheet('heroine-walk', '/assets/images/heroine/heroine_walk.png', { frameWidth: 32, frameHeight: 32 });
@@ -90,6 +89,13 @@ export default class ExplorationScene extends Phaser.Scene {
 
   create() {
     console.log('[ExplorationScene] create() début');
+    // Les données JSON sont importées statiquement (Vite) et ajoutées au cache
+    // pour éviter les 404 après build (T-024).
+    this.cache.tilemap.add('clairiere', clairiereMap as any);
+    this.cache.json.add('kaelDialogue', kaelDialogue);
+    this.cache.json.add('puzzle1', puzzle1Config);
+    this.cache.json.add('enemyTestEnemy', testEnemyData);
+
     // Load the tilemap
     this.map = this.make.tilemap({ key: 'clairiere' });
 
@@ -228,9 +234,7 @@ export default class ExplorationScene extends Phaser.Scene {
       successEvent: string;
       blockerId?: string;
     };
-    this.puzzleSystem = new PuzzleSystem(this, puzzleConfig, () => {
-      this.onPuzzleSolved();
-    });
+    this.puzzleSystem = new PuzzleSystem(this, puzzleConfig);
     this.interactionSystem.setOnPuzzleActivation((id: string) => {
       this.puzzleSystem.notifyActivation(id);
     });
@@ -241,9 +245,9 @@ export default class ExplorationScene extends Phaser.Scene {
     if (this.encounterLayer) {
       this.encounterSystem.loadFromObjectLayer(this.encounterLayer);
     }
-    this.encounterSystem.setOnEncounterTriggered((enemyId: string) => {
-      this.startCombat(enemyId);
-    });
+    // Un seul canal de déclenchement : la valeur de retour d'update()
+    // (T-025). Le callback setOnEncounterTriggered n'est pas branché ici pour
+    // éviter le double appel de startCombat().
 
     // Listen for puzzle success event
     this.events.on(puzzleConfig.successEvent, () => {
@@ -551,7 +555,7 @@ export default class ExplorationScene extends Phaser.Scene {
 
   private triggerInteraction(): void {
     if (this.currentInteraction) {
-      const id = String(this.currentInteraction.id);
+      const id = this.currentInteraction.name;
       const name = this.currentInteraction.name;
 
       // Puzzle objects: notify the puzzle system (runic stones)

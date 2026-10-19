@@ -15,12 +15,10 @@ export class PuzzleSystem {
   private currentSequence: string[] = [];
   private solved: boolean = false;
   private activatedStones: Set<string> = new Set();
-  private onSuccess?: () => void;
 
-  constructor(scene: Phaser.Scene, config: PuzzleConfig, onSuccess?: () => void) {
+  constructor(scene: Phaser.Scene, config: PuzzleConfig) {
     this.scene = scene;
     this.config = config;
-    this.onSuccess = onSuccess;
   }
 
   /**
@@ -38,9 +36,6 @@ export class PuzzleSystem {
     if (allExpected && !this.solved) {
       this.solved = true;
       this.scene.events.emit(this.config.successEvent);
-      if (this.onSuccess) {
-        this.onSuccess();
-      }
     }
   }
 
@@ -72,9 +67,6 @@ export class PuzzleSystem {
         // Full sequence completed.
         this.solved = true;
         this.scene.events.emit(this.config.successEvent);
-        if (this.onSuccess) {
-          this.onSuccess();
-        }
         return true;
       }
 
