@@ -91,13 +91,15 @@ export default class ExplorationScene extends Phaser.Scene {
     console.log('[ExplorationScene] create() début');
     // Les données JSON sont importées statiquement (Vite) et ajoutées au cache
     // pour éviter les 404 après build (T-024).
-    this.cache.tilemap.add('clairiere', clairiereMap as any);
+    // Le tilemap est passe directement aux donnees (pas via le cache) car
+    // this.cache.tilemap.add + this.make.tilemap({ key }) ne parse pas le
+    // JSON brut Tiled en TilemapData, ce qui rend les layers introuvables.
     this.cache.json.add('kaelDialogue', kaelDialogue);
     this.cache.json.add('puzzle1', puzzle1Config);
     this.cache.json.add('enemyTestEnemy', testEnemyData);
 
-    // Load the tilemap
-    this.map = this.make.tilemap({ key: 'clairiere' });
+    // Load the tilemap directly from the imported JSON data (T-024 fix).
+    this.map = this.make.tilemap({ tilemap: clairiereMap as any });
 
     // Get layers
     this.groundLayer = this.map.getLayer('ground');
