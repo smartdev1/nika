@@ -98,10 +98,16 @@ export default class ExplorationScene extends Phaser.Scene {
     this.cache.json.add('puzzle1', puzzle1Config);
     this.cache.json.add('enemyTestEnemy', testEnemyData);
 
-    // Load the tilemap directly from the imported JSON data (T-024 fix).
-    // Using Phaser.Tilemap.fromJSON() bypasses the factory's key-based lookup
-    // that silently fails to parse raw JSON added via cache.tilemap.add.
-    this.map = Phaser.Tilemap.fromJSON(clairiereMap as any);
+    // Le tilemap est ajouté au cache avec le format TILED_JSON (1) pour que
+    // this.make.tilemap({ key }) puisse le parser correctement.
+    // Note: cache.tilemap.add attend un objet { format, data }, pas le JSON brut.
+    this.cache.tilemap.add('clairiere', {
+        format: Phaser.Tilemaps.Formats.TILED_JSON,
+        data: clairiereMap,
+    });
+
+    // Load the tilemap from the cache.
+    this.map = this.make.tilemap({ key: 'clairiere' });
 
     // Get layers
     this.groundLayer = this.map.getLayer('ground');
