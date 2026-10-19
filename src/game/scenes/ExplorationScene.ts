@@ -99,7 +99,9 @@ export default class ExplorationScene extends Phaser.Scene {
     this.cache.json.add('enemyTestEnemy', testEnemyData);
 
     // Load the tilemap directly from the imported JSON data (T-024 fix).
-    this.map = this.make.tilemap({ tilemap: clairiereMap as any });
+    // Using Phaser.Tilemap.fromJSON() bypasses the factory's key-based lookup
+    // that silently fails to parse raw JSON added via cache.tilemap.add.
+    this.map = Phaser.Tilemap.fromJSON(clairiereMap as any);
 
     // Get layers
     this.groundLayer = this.map.getLayer('ground');
@@ -112,7 +114,7 @@ export default class ExplorationScene extends Phaser.Scene {
     // Validate layers exist
     if (!this.groundLayer || !this.obstacleLayer || !this.interactionLayer || !this.encounterLayer) {
       console.error('[ExplorationScene] Layers not found. Check clairiere.json has: ground, obstacles, interactives, encounters');
-      return;
+      return; // Stop if required layers are missing
     }
     console.log('[ExplorationScene] Layers OK');
 

@@ -30,17 +30,17 @@ As a player, the game loads correctly in production build (no missing data files
 ## Implementation log
 - Imports JSON statiques Vite (clairiereMap, kaelDialogue, puzzle1Config, testEnemyData) avec resolveJsonModule activé dans tsconfig.json
 - this.cache.json.add pour les autres JSON dans create() pour rendre les données accessibles via this.cache.json.get()
-- Tilemap passe directement aux donnees via this.make.tilemap({ tilemap: clairiereMap }) (pas par le cache) pour eviter le problème de layers introuvables (T-024 fix)
+- Tilemap via Phaser.Tilemap.fromJSON(clairiereMap) : make.tilemap({ tilemap }) ne parse pas correctement le JSON importé ; la méthode statuelle fromJSON() assure un parse correct
 - Suppression des appels this.load.tilemapTiledJSON / this.load.json avec chemins src/data/ de preload()
 - Build Vite réussit sans erreur de fichier manquant (verifié)
-- Les données sont accessibles via this.cache.json.get() comme avant
 
 ## Review
 Verdict : REVUE OK.
-- AC 1 (imports JSON statiques + cache Phaser) : VERIFIE (ExplorationScene.ts:17-20, 94-97)
+- AC 1 (imports JSON statiques + cache Phaser) : VERIFIE (ExplorationScene.ts:17-20, 97-99)
 - AC 2 (suppression load par URL dans preload) : VERIFIE (preload = images seulement)
 - AC 3 (build Vite reussi) : VERIFIE (npm run build reussi sans erreur de fichier manquant)
 - AC 4 (donnees accessibles via this.cache.json.get) : VERIFIE (lignes 231-236, 633)
+Note : la premiere tentative avec make.tilemap({ tilemap }) ne parse pas le JSON importe → layers toujours introuvables → passage a Phaser.Tilemap.fromJSON()
 Statut : review → qa.
 
 ## QA report
